@@ -5,9 +5,10 @@ import logging
 import socketserver
 from http import server
 import bluetooth
+import cv2
 
 
-'''
+
 PAGE="""\
 <html>
 <head>
@@ -19,8 +20,8 @@ PAGE="""\
 </body>
 </html>
 """
-'''
 
+'''
 PAGE2 = """\
 <html>
 <head>
@@ -32,6 +33,7 @@ PAGE2 = """\
 </body>
 </html>
 """
+'''
 
 
 class StreamingOutput(object):
@@ -71,7 +73,7 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                 'Content-Type', 'multipart/x-mixed-replace; boundary=FRAME')
             self.end_headers()
             try:
-                while True:
+                while not (cv2.waitKey(1) & 0xFF == ord('q')):
                     frame = output.frame
                     self.wfile.write(b'--FRAME\r\n')
                     self.send_header('Content-Type', 'image/jpeg')
@@ -83,6 +85,10 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                 logging.warning(
                     'Removed streaming client %s: %s',
                     self.client_address, str(e))
+            except KeyboardInterrupt:
+                global server
+                server.server_close()
+                exit()
         else:
             self.send_error(404)
             self.end_headers()
@@ -126,7 +132,7 @@ print("\n===============Found===============")
 print("Name:", target_name)
 print("Addr:", target_address)
 '''
-
+'''
 server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
 
 port = 1
@@ -149,9 +155,9 @@ print("\tSent: ACK2")
 
 client_sock.close()
 server_sock.close()
-
-
 '''
+
+
 with picamera.PiCamera(resolution='640x480', framerate=24) as camera:
     print("Hello")
     output = StreamingOutput()
@@ -166,6 +172,11 @@ with picamera.PiCamera(resolution='640x480', framerate=24) as camera:
             server.handle_request()
     finally:
         camera.stop_recording()
+
         
 # ./ngrok http 8001
-'''
+
+# amixer cset numid=3 1         //set audio output
+# amixer scontrols              
+# amixer sset 'Master' 100%     //set volume to 100%
+
