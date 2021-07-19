@@ -32,6 +32,7 @@ count = 1
 try:
     with picamera.PiCamera() as camera:
         camera.resolution = (640, 480)
+        camera.rotation = 180
         print("starting Camera...........")
         time.sleep(2)
         stream = io.BytesIO()

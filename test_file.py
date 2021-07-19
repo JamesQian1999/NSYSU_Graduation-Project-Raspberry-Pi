@@ -7,7 +7,7 @@ from http import server
 import bluetooth
 import cv2
 
-
+os.system("kill -9 `ps -fA | grep \"[0-9] python3 test_file.py\" | sed \"s/pi\\ \\ *\\([0-9][0-9]*\\).*/\\1/g\" | tr '\\n' '\\ ' | sed \"s/" + str(os.getpid()) + "//g\"` 2> /dev/null")
 
 PAGE="""\
 <html>
