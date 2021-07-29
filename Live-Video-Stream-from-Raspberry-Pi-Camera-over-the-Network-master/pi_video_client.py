@@ -2,26 +2,31 @@ import io
 import socket
 import struct
 import time
+from typing import Counter
 import picamera
 import sys
+from PIL import Image
+import cv2
 
-'''
-client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client_socket.connect(("192.168.0.178", 10001))
 
-try:
-    with picamera.PiCamera() as camera:
-        camera.resolution = (640, 480)
-        print("starting Camera...........")
-        time.sleep(2)
-        stream = io.BytesIO()
-        for foo in camera.capture_continuous(stream, 'jpeg'):
-            client_socket.sendto(struct.pack('<L', stream.tell()),("192.168.0.178",10001))
-            stream.seek(0)
-            client_socket.sendto(stream.read(),("192.168.0.178",10001))
-            stream.seek(0)
-            stream.truncate()
-finally:
-    client_socket.close()
+with picamera.PiCamera() as camera:
+    camera.resolution = (640, 480)
+    camera.rotation = 180
+    print("starting Camera...........")
+    stream = "test.jpg"
+    f = open(stream, 'wb')
+    count = 0
+    cap = camera.capture_continuous(f, 'jpeg', use_video_port=True)
+    f = open(stream, 'rb')
+    l = f.read(1024)
+    print(type(cap))
+    for foo in cap:
+        client_socket.send(l)
+
+camera.close()
+
 
 '''
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -60,3 +65,4 @@ try:
 except:
     # connection.close()
     client_socket.close()
+'''

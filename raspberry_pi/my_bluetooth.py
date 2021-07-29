@@ -8,19 +8,32 @@ import base64
 
 
 def connect():
-    port = 10002
     #count = 1
     threads = []
     print("\033[33mRaspberry Pi is ready for listening bluetooth socket...\033[m")
     while(global_var.verified == 0):
         #print("client %d"%(count))
         server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-        server_sock.bind(("", port))  # ps -fA | grep python
+        server_sock.bind(("", bluetooth.PORT_ANY))  # ps -fA | grep python
         server_sock.listen(1)
+
+        port = server_sock.getsockname()[1]
+        
+        uuid = "00001101-0000-1000-8000-00805F9B34FB"
+
+        bluetooth.advertise_service(server_sock, "IoT Server",
+                                    service_id = uuid,
+                                    service_classes = [ uuid, bluetooth.SERIAL_PORT_CLASS ],
+                                    profiles = [ bluetooth.SERIAL_PORT_PROFILE ])
+
+        print("Waiting for connection on RFCOMM channel %d" % port)
         client_sock, address = server_sock.accept()
+        data = client_sock.recv(1024)
+        client_sock.send("ACK")
+
         handle_client(client_sock, address)
         #threads.append(threading.Thread(target=handle_client, args=(client_sock, address)))
-        #threads[len(threads)-1].start()
+        # threads[len(threads)-1].start()
         #count += 1
 
 
@@ -54,13 +67,13 @@ def handle_client(client_sock, address):
         print(pre_key.publickey().export_key().decode('utf-8'))
         client_sock.send(pre_key.publickey().export_key())
 
-        # Receive msg with RSA 
+        # Receive msg with RSA
         data = client_sock.recv(rev_buff)
         print("\n\033[32mReceived Data:\033[m")
-        print("Before decrypt:",data.decode('utf-8'))
+        print("Before decrypt:", data.decode('utf-8'))
         cipher = PKCS1_cipher.new(pre_key)
         back_text = cipher.decrypt(base64.b64decode(data), 0)
-        print("After decrypt:",back_text.decode('utf-8'))
+        print("After decrypt:", back_text.decode('utf-8'))
 
         # Sent msg with RSA
         msg = "This is secret too!"
@@ -70,8 +83,8 @@ def handle_client(client_sock, address):
         cipher = PKCS1_cipher.new(phone_key)
         rsa_text = base64.b64encode(cipher.encrypt(bytes(msg.encode("utf8"))))
         print("\n\033[32mSent Data:\033[m")
-        print("Before encrypt: ",msg)
-        print("After encrypt: ",rsa_text.decode('utf-8'))
+        print("Before encrypt: ", msg)
+        print("After encrypt: ", rsa_text.decode('utf-8'))
         client_sock.send(rsa_text)
 
     client_sock.close()
