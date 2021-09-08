@@ -48,6 +48,14 @@ def on_ir_receive(pinNo, bouncetime=150):
         elif 1000 < us < 2000:
             outbin += "1"
     try:
+        # count = 0
+        # bits = ''
+        # for bit in outbin:
+        #     count+=1
+        #     bits += bit
+        #     if(not count%4):
+        #         print(bits,'=>',"dec:",int(bits,2),"hex:",str(hex(int(bits,2))))
+        #         bits = ''
         return int(outbin, 2)
     except ValueError:
         # probably an empty code
@@ -67,7 +75,8 @@ if __name__ == "__main__":
             GPIO.wait_for_edge(set_pin_P, GPIO.FALLING)
             codeR = on_ir_receive(set_pin_P)
             if codeR:
-                print(str(hex(codeR)))
+                print("Hex:",str(hex(codeR)))
+                print("Dec:",str(codeR))
             else:
                 print("Invalid code")
     except:

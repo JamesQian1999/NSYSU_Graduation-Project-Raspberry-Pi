@@ -6,4 +6,4 @@ import global_var
 if(__name__ == "__main__"):
     global_var.init()
     mb.connect()
-    #streaming.start()
+    #streaming.start() # v4l2rtspserver -W 640 -H 480 -F 15 -P 8554 /dev/video0

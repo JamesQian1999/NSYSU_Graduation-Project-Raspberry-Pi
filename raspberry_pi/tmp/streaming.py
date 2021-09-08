@@ -44,11 +44,11 @@ def connect(connection):
             print("\n\n\033[33mStart Streaming...\033[m")
             for foo in cap:
                 print("\tLoop latency:\t",(time.time_ns()-loop)/10**9, "s", sep="")
-                print("\tData size:\t", stream.tell(), sep="")
+                print("\tData size:\t", stream.tell(),"bytes", sep="")
                 sys.stdout.write("\033[F")
                 sys.stdout.write("\033[F")
 
-                connection.write(struct.pack('<L', stream.tell()))
+                connection.write(struct.pack('!i', stream.tell()))
                 connection.flush()
 
                 stream.seek(0)
@@ -60,3 +60,6 @@ def connect(connection):
                 loop = time.time_ns()
     except:
         return
+
+if(__name__ == "__main__"):
+    start()
