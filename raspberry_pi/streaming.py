@@ -2,7 +2,7 @@ import global_var
 import os
 import time
 
-# ifconfig | egrep 'inet [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' 
+# ifconfig | egrep -o 'inet [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+ ' | sed '1d;s/inet //g'
 
 def start():
     try:
@@ -12,7 +12,7 @@ def start():
             print("child")
             os.system("v4l2rtspserver -W 640 -H 480 -F 15 -P 8554 /dev/video0")
         else:
-            time.sleep(15)
+            time.sleep(5)
             print("perant(child pid = ",pid,")",sep="")
             os.system("kill -9 "+ str(pid))
             os.system("kill -9 `ps -e | grep v4l2rtspserver | awk '{print $1}'`")

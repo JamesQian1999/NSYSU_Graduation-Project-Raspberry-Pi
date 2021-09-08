@@ -14,8 +14,7 @@ import os
 
 # print("count =", count)
 
-i = os.popen("ifconfig")
+i = os.popen("ifconfig | egrep -o 'inet [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+ ' | sed '1d;s/inet //g'")
 i = i.read()
-print("\n\n",i)
-
-
+i = "rtsp://"+i[:-2]+":8554/unicast"
+print(i)
