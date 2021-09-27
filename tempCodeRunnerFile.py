@@ -1,21 +1,12 @@
-address = ('', 8000)
-# server = socketserver.TCPServer(address, Test)
-# server.handle_request()
+for ifaceName in interfaces():
+#     addresses = [i['addr'] for i in ifaddresses(ifaceName).setdefault(AF_INET, [{'addr':'No IP addr'}] )]
+#     print(addresses)
 
-# while 1:
-#     password = input("Please enter the password: ")
-#     if(password != "1129" ):
-#         PAGE2="""\
-# <html>
-# <head>
-# <title>Raspberry Pi - Surveillance Camera</title>
-# </head>
-# <body>
-# <center><h1>Raspberry Pi - Surveillance Camera</h1></center>
-# <center><h2>Password error, please enter again.</h2></center>
-# </body>
-# </html>
-# """
-#         server.handle_request()
-#     else:
-#         break
+# msg = "ABC"
+# count = 0
+
+# for i in msg:
+#     print("i =", i)
+#     count+=(ord(i)-65)
+
+# print("count =", count)

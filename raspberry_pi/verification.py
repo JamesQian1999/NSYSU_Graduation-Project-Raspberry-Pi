@@ -1,16 +1,16 @@
 import global_var
 import RPi.GPIO as GPIO
 import time
+from Crypto.PublicKey import RSA   # pip3 install -U PyCryptodome
+from Crypto.Cipher import PKCS1_v1_5 as PKCS1_cipher
+import base64
 
-set_pin_R = 13
-set_pin_P = 15
-codeR = 0
-codeP = 0
+pin = 15
+code = 0
 
 def setup():
     GPIO.setmode(GPIO.BOARD)  # Numbers GPIOs by physical location
-    GPIO.setup(set_pin_R, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-    GPIO.setup(set_pin_P, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+    GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 
 def binary_aquire(pin, duration):
@@ -49,14 +49,6 @@ def on_ir_receive(pinNo, bouncetime=150):
         elif 1000 < us < 2000:
             outbin += "1"
     try:
-        count = 0
-        bits = ''
-        for bit in outbin:
-            count+=1
-            bits += bit
-            if(not count%4):
-                print(bits,'=>',"dec:",int(bits,2),"hex:",str(hex(int(bits,2))))
-                bits = ''
         print("Bin:",outbin)
         return int(outbin, 2)
     except ValueError:
@@ -67,41 +59,113 @@ def on_ir_receive(pinNo, bouncetime=150):
 def destroy():
     GPIO.cleanup()
 
-
-def verify(client_sock):
+def verify_tenant(client_sock):
     # verified
 
-    msg = "ABCE"
-    print("\n\033[32mSent:\033[m\t\t",msg,sep="")
-    if(client_sock!=None):
-        client_sock.send(msg)
-    v = 0
+    # code = 0
+    # for i in first_pi:
+    #     code+=(i-65)
+    # print("\nverification code =",code)
 
-    for i in msg:
-        v+=(ord(i)-65)
-    print("verification code =",v)
+    print("\n\033[32mSenty:\033[m 123")
+    client_sock.send(b"123")
 
     setup()
     try:
-        print("Starting IR Listener")
-        codeR = -1
-        #while codeR != v:
-        if True:
+        print("\nStarting IR Listener\n")
+        c = 0
+        v = 0
+        while (c!=10):
+            c+=1
             print("Waiting for signal...")
-            GPIO.wait_for_edge(set_pin_P, GPIO.FALLING)
-            codeR = on_ir_receive(set_pin_P)
-            if codeR:
-                print("Hex:",str(hex(codeR)))
-                print("Dec:",str(codeR),"\n")
+            GPIO.wait_for_edge(pin, GPIO.FALLING)
+            ir = on_ir_receive(pin)
+            if ir:
+                print("Hex:",str(hex(ir)))
+                print("Dec:",str(ir),"\n")
+                if ir == code:
+                    client_sock.send(b"verification successful")
+                    print("\033[33mTenant verification successful!\033[m")
+                    global_var.verified = 1
+                    global_var.verified_sock = client_sock
+                    return True
             else:
-                print("Invalid code")
+                print("Invalid code\n")
+            client_sock.send(b"F")
+
     except Exception as e:
         print("Quitting:",e)
         destroy()
 
-    global_var.verified = 1
-    global_var.verified_sock = client_sock
-    return True
+    print("\033[33mTenant verification failure!\033[m")
+    return False
+
+
+
+def verify(client_sock):
+    # verified
+
+    # Read Private Key
+    encodedKey = open("private.pem", "rb")
+    pi_key = RSA.import_key(encodedKey.read())
+
+    pi_key = pi_key.publickey().export_key()
+    pi_key = pi_key[27:-25]
+    first_pi = pi_key[:5]
+    print(first_pi.decode())
+    print("\n\033[32mSent Raspberry Pi Public Key:\033[m")
+    print(pi_key,"\nlen:",len(pi_key))
+    client_sock.send(pi_key)
+
+    #Receive phone Key    
+    phone_key = client_sock.recv(2048)
+    phone_key = "-----BEGIN PUBLIC KEY-----\n"+phone_key.decode()+"\n-----END PUBLIC KEY-----"
+    print("Phone Public Key:\n",phone_key)
+    pre_key_RSA = RSA.import_key(phone_key)
+
+
+    # pi_pub_key = ""
+    # print("\n\033[32mSent:\033[m\t\t",pi_pub_key,sep="")
+    # if(client_sock!=None):
+    #     client_sock.send(pi_pub_key)
+    # v = 0
+
+    code = 0
+    for i in first_pi:
+        code+=(i-65)
+    print("\nverification code =",code)
+
+    setup()
+    try:
+        print("\nStarting IR Listener\n")
+        c = 0
+        v = 0
+        while (c!=10):
+            c+=1
+            print("Waiting for signal...")
+            GPIO.wait_for_edge(pin, GPIO.FALLING)
+            ir = on_ir_receive(pin)
+            if ir:
+                print("Hex:",str(hex(ir)))
+                print("Dec:",str(ir),"\n")
+                if ir == code:
+                    client_sock.send(b"verification successful")
+                    print("\033[33mVerification successful!\033[m")
+                    global_var.verified = 1
+                    global_var.verified_sock = client_sock
+                    return True
+            else:
+                print("Invalid code\n")
+            client_sock.send(b"F")
+
+    except Exception as e:
+        print("Quitting:",e)
+        destroy()
+
+    print("\033[33mVerification failure!\033[m")
+    return False
+
+    
 
 if(__name__ == "__main__"):
     verify(None)

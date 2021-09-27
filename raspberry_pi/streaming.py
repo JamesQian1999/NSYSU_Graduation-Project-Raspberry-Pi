@@ -11,15 +11,16 @@ def start():
         if(pid == 0):
             print("child")
             os.system("v4l2rtspserver -W 640 -H 480 -F 15 -P 8554 /dev/video0")
-        else:
-            time.sleep(5)
-            print("perant(child pid = ",pid,")",sep="")
-            os.system("kill -9 "+ str(pid))
-            os.system("kill -9 `ps -e | grep v4l2rtspserver | awk '{print $1}'`")
-            print("killed")
+        # else:
+        #     time.sleep(30)
+        #     print("perant(child pid = ",pid,")",sep="")
+        #     os.system("kill -9 "+ str(pid))
+        #     os.system("kill -9 `ps -e | grep v4l2rtspserver | awk '{print $1}'`")
+        #     print("killed")
     except Exception as s:
         print("exception:",s)
         return
+
     # server_ip = "192.168.0.178"
     # server_port = 10001
 
