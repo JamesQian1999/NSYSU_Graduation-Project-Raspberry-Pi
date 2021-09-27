@@ -1,6 +1,7 @@
 import global_var
 import os
 import time
+import my_server as ms
 
 # ifconfig | egrep -o 'inet [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+ ' | sed '1d;s/inet //g'
 
@@ -9,14 +10,11 @@ def start():
         pid = os.fork()
         # kill -9 `ps -e | grep v4l2rtspserver | awk '{print $1}'`
         if(pid == 0):
-            print("child")
-            os.system("v4l2rtspserver -W 640 -H 480 -F 15 -P 8554 /dev/video0")
-        # else:
-        #     time.sleep(30)
-        #     print("perant(child pid = ",pid,")",sep="")
-        #     os.system("kill -9 "+ str(pid))
-        #     os.system("kill -9 `ps -e | grep v4l2rtspserver | awk '{print $1}'`")
-        #     print("killed")
+            print("Srart")
+            os.system("v4l2rtspserver -W 640 -H 480 -F 15 -P 8555 /dev/video0")
+        else:
+            #ms.connect()
+            os.wait()
     except Exception as s:
         print("exception:",s)
         return

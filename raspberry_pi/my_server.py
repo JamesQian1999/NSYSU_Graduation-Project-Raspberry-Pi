@@ -3,6 +3,7 @@ import socket
 
 
 def connect():
+    print("My server")
     HOST = '172.20.10.5'
     PORT = 9999
 

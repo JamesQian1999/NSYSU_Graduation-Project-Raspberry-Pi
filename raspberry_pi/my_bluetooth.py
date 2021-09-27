@@ -31,18 +31,26 @@ def connect():
         print("Waiting for connection on RFCOMM channel %d" % port)
         client_sock, address = server_sock.accept()
 
-        data = client_sock.recv(1024)
-        print("\n\033[32m",data.decode(),"\t\033[m",  sep="")
+        print("\n\033[34mAccepted connection from ", address, "\033[m")
 
-        if data == "owner":
+        data = client_sock.recv(2048)
+        print("\n\033[32mReceived:\t\033[m", data.decode(), sep="")
+            
+        print("\n\033[32mSent:\033[m\t\tACK")
+        client_sock.send("ACK")
+
+        data = client_sock.recv(2048)
+        print("\n\033[32mReceived:\t\033[m",data.decode(),"\t\033[m",  sep="")
+
+
+        if data.decode() == "Owner":
             print("At owner")
             handle_client(client_sock, address)
             # t1 = threading.Thread(target=handle_client, args=(client_sock, address))
             # t1.start()
         else:
             print("At tenant")
-            t2 = threading.Thread(target=tenant_connect, args=(client_sock, address))
-            t2.start()
+            tenant_connect(client_sock, address)
         #threads.append()
         # threads[len(threads)-1].start()
         #count += 1
@@ -53,13 +61,6 @@ def tenant_connect(client_sock, address):
 
     rev_buff = 2048
 
-    print("\n\033[34mAccepted connection from ", address, "\033[m")
-
-    data = client_sock.recv(rev_buff)
-    print("\n\033[32mReceived:\t\033[m", data.decode(), sep="")
-            
-    print("\n\033[32mSent:\033[m\t\tACK")
-    client_sock.send("ACK")
 
     data = client_sock.recv(rev_buff)
     print("\n\033[32mReceived:\t\033[m", data.decode(), sep="")
@@ -87,19 +88,9 @@ def tenant_connect(client_sock, address):
 def handle_client(client_sock, address):
     rev_buff = 2048
 
-
-    print("\n\033[34mAccepted connection from ", address, "\033[m")
-
-    data = client_sock.recv(rev_buff)
-    print("\n\033[32mReceived:\t\033[m", data.decode(), sep="")
-        
-    print("\n\033[32mSent:\033[m\t\tACK")
-    client_sock.send("ACK")
-
-    data = client_sock.recv(rev_buff)
-    print("\n\033[32mReceived:\t\033[m", data.decode(), sep="")
-
     if(verify(client_sock)):
+
+        print("\033[33mVerification finish!\033[m")
 
         data = client_sock.recv(rev_buff)
         print("\n\033[32mReceived:\t\033[m", data.decode(), sep="")
@@ -112,7 +103,7 @@ def handle_client(client_sock, address):
 
         i = os.popen("ifconfig | egrep -o 'inet [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+ ' | sed '1d;s/inet //g'")
         i = i.read()
-        i = "rtsp://"+i[:-2]+":8554/unicast"
+        i = "rtsp://"+i[:-2]+":8555/unicast"
         print("\n\033[32mSent:\033[m\t\t",i)
         client_sock.send(i)
 

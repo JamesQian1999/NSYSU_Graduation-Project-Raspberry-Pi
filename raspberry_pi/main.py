@@ -1,5 +1,4 @@
 import my_bluetooth as mb
-import my_server as ms
 import streaming
 import global_var
 import os
@@ -12,5 +11,5 @@ if(__name__ == "__main__"):
     mb.connect()
     if global_var.verified:
         streaming.start() # v4l2rtspserver -W 640 -H 480 -F 15 -P 8554 /dev/video0
-        ms.connect()
+        
     
