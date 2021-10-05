@@ -65,9 +65,9 @@ def tenant_connect(client_sock, address):
         data = client_sock.recv(rev_buff)
         print("\n\033[32mReceived:\t\033[m", data.decode(), sep="")
 
-        i = os.popen("ifconfig | egrep -o 'inet [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+ ' | sed 's/inet 127.0.0.1//g' | tr '\n' ' '| sed 's/inet //g'")
+        i = os.popen("ifconfig | egrep -o 'inet [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+ ' | sed '1d;s/inet //g'")
         i = i.read()
-        i = "rtsp://"+i[:-4]+":"+str(global_var.s_port)+"/unicast"
+        i = "rtsp://"+i[:-2]+":8555/unicast"
         print("\n\033[32mSent:\033[m\t\t",i)
         client_sock.send(i)
 
@@ -91,12 +91,13 @@ def handle_client(client_sock, address):
         data = client_sock.recv(rev_buff)
         print("\n\033[32mReceived:\t\033[m", data.decode(), sep="")
 
-        i = os.popen("ifconfig | egrep -o 'inet [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+ ' | sed 's/inet 127.0.0.1//g' | tr '\n' ' '| sed 's/inet //g'")
+        i = os.popen("ifconfig | egrep -o 'inet [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+ ' | sed '1d;s/inet //g'")
         i = i.read()
-        i = "rtsp://"+i[:-4]+":"+str(global_var.s_port)+"/unicast"
+        i = "rtsp://"+i[:-2]+":8555/unicast"
         print("\n\033[32mSent:\033[m\t\t",i)
         client_sock.send(i)
-    
+
+       
     print("\033[33mSocket close\033[m")
     client_sock.close()
 

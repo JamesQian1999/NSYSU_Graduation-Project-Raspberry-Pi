@@ -4,8 +4,8 @@ import socket
 
 def connect():
     print("My server")
-    HOST = '192.168.0.101'
-    PORT = 9999
+    HOST = '192.168.0.115'
+    PORT = 10000
 
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.connect((HOST, PORT))
@@ -22,9 +22,6 @@ def connect():
     print("\n\033[32mSent:\033[m\t\tpi")
     server.send(b"pi")
 
-
-
-
     data = server.recv(2048)
     print("\n\033[32mReceived:\t\033[m", data.decode(), sep="")
 
@@ -34,17 +31,12 @@ def connect():
     data = server.recv(2048)
     print("\n\033[32mReceived:\t\033[m", data.decode(), sep="")
 
-    print("\n\033[32mSent:\033[m\t\tclose")
+    print("\n\033[32mSent:\033[m\t\topen")
     server.send(b"close")
 
     while True:
-        print("\n\033[33mWaiting for command...\033[m")
-
         data = server.recv(2048)
-        print("\033[32mReceived:\t\033[m", data.decode(), sep="")
-        
-        print("\033[32mSent:\033[m\t\tACK")
-        server.send(b"ACK")
+        print("\n\033[32mReceived:\t\033[m", data.decode(), sep="")
 
 
 

@@ -1,40 +1,47 @@
-from bluetooth import *
-import subprocess
+import os
 
-server_sock=BluetoothSocket( RFCOMM )
-server_sock.bind(("",PORT_ANY))
-server_sock.listen(1)
+i = os.popen("ifconfig | egrep -o 'inet [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+ ' | sed 's/inet 127.0.0.1//g' | tr '\n' ' '| sed 's/inet //g'")
+i = i.read()
+i = "rtsp://"+i[:-4]+":8555/unicast"
+print("\n\033[32mSent:\033[m\t\t",i)
 
-port = server_sock.getsockname()[1]
+# from bluetooth import *
+# import subprocess
 
-uuid = "94f39d29-7d6d-437d-973b-fba39e49d4ee"
+# server_sock=BluetoothSocket( RFCOMM )
+# server_sock.bind(("",PORT_ANY))
+# server_sock.listen(1)
 
-advertise_service( server_sock, "SampleServer",
-                   service_id = uuid,
-                   service_classes = [ uuid, SERIAL_PORT_CLASS ],
-                   profiles = [ SERIAL_PORT_PROFILE ])
+# port = server_sock.getsockname()[1]
 
-print("Waiting for connection on RFCOMM channel %d" % port)
+# uuid = "94f39d29-7d6d-437d-973b-fba39e49d4ee"
 
-client_sock, client_info = server_sock.accept()
+# advertise_service( server_sock, "SampleServer",
+#                    service_id = uuid,
+#                    service_classes = [ uuid, SERIAL_PORT_CLASS ],
+#                    profiles = [ SERIAL_PORT_PROFILE ])
 
-print("Accepted connection from ", client_info)
+# print("Waiting for connection on RFCOMM channel %d" % port)
 
-#this part will try to get something form the client
-# you are missing this part - please see it's an endlees loop!!
-try:
-    data = client_sock.recv(1024)
-    client_sock.send("ACK")
-    while True:
-        data = client_sock.recv(1024)
-        if len(data) == 0: break
-        print("received [%s]" % data)
+# client_sock, client_info = server_sock.accept()
 
-# raise an exception if there was any error
-except IOError:
-    pass
+# print("Accepted connection from ", client_info)
 
-print("disconnected")
+# #this part will try to get something form the client
+# # you are missing this part - please see it's an endlees loop!!
+# try:
+#     data = client_sock.recv(1024)
+#     client_sock.send("ACK")
+#     while True:
+#         data = client_sock.recv(1024)
+#         if len(data) == 0: break
+#         print("received [%s]" % data)
 
-client_sock.close()
-server_sock.close()
+# # raise an exception if there was any error
+# except IOError:
+#     pass
+
+# print("disconnected")
+
+# client_sock.close()
+# server_sock.close()

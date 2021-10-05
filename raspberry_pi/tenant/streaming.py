@@ -11,29 +11,14 @@ def start():
         # kill -9 `ps -e | grep v4l2rtspserver | awk '{print $1}'`
         if(pid == 0):
             print("\n\033[32mStart streaming...\n\033[m")
-            #while True:
-            os.system("v4l2rtspserver -W 640 -H 480 -F 15 -P "+str(global_var.s_port)+" /dev/video0")
-                #global_var.s_port+=1
-            
+            os.system("v4l2rtspserver -W 640 -H 480 -F 15 -P 8555 /dev/video0")
         else:
-            time.sleep(7)
-            ms.connect()
+            #ms.connect()
+            #tenent()
             os.wait()
     except Exception as s:
         print("exception:",s)
         return
-
-
-if(__name__ == "__main__"):
-    start()
-
-
-
-
-
-
-
-
 
 
     # server_ip = "192.168.0.178"
@@ -91,3 +76,5 @@ if(__name__ == "__main__"):
 #     except:
 #         return
 
+if(__name__ == "__main__"):
+    start()

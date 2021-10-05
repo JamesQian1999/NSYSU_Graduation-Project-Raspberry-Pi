@@ -59,47 +59,6 @@ def on_ir_receive(pinNo, bouncetime=150):
 def destroy():
     GPIO.cleanup()
 
-def verify_tenant(client_sock):
-    # verified
-
-    # code = 0
-    # for i in first_pi:
-    #     code+=(i-65)
-    # print("\nverification code =",code)
-
-    print("\n\033[32mSenty:\033[m 123")
-    client_sock.send(b"123")
-
-    setup()
-    try:
-        print("\nStarting IR Listener\n")
-        c = 0
-        v = 0
-        while (c!=10):
-            c+=1
-            print("Waiting for signal...")
-            GPIO.wait_for_edge(pin, GPIO.FALLING)
-            ir = on_ir_receive(pin)
-            if ir:
-                print("Hex:",str(hex(ir)))
-                print("Dec:",str(ir),"\n")
-                if ir == code:
-                    client_sock.send(b"verification successful")
-                    print("\033[33mTenant verification successful!\033[m")
-                    global_var.verified = 1
-                    global_var.verified_sock = client_sock
-                    return True
-            else:
-                print("Invalid code\n")
-            client_sock.send(b"F")
-
-    except Exception as e:
-        print("Quitting:",e)
-        destroy()
-
-    print("\033[33mTenant verification failure!\033[m")
-    return False
-
 
 
 def verify(client_sock):
@@ -114,7 +73,7 @@ def verify(client_sock):
     first_pi = pi_key[:5]
     print(first_pi.decode())
     print("\n\033[32mSent Raspberry Pi Public Key:\033[m")
-    print(pi_key.decode(),"\nlen:",len(pi_key))
+    print(pi_key,"\nlen:",len(pi_key))
     client_sock.send(pi_key)
 
     #Receive phone Key    

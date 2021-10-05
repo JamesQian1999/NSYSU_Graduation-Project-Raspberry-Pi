@@ -7,11 +7,9 @@ def init():
     global verified_sock
     global verified
     global password
-    global s_port
 
     verified = 0
     password = "1129"
-    s_port = 8557
 
     # Let Raspberry Pi's Bluetooth scannable
     os.system("clear ; echo " + password + " | sudo hciconfig hci0 piscan")
