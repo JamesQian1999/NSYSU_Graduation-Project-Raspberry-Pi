@@ -44,12 +44,12 @@ def connect(t = 0):
 
 
         if data.decode() == "Owner":
-            #print("At owner")
+            print("At owner")
             handle_client(client_sock, address)
             # t1 = threading.Thread(target=handle_client, args=(client_sock, address))
             # t1.start()
         else:
-            #print("At tenant")
+            print("At tenant")
             tenant_connect(client_sock, address)
         #threads.append()
         # threads[len(threads)-1].start()

@@ -16,7 +16,7 @@ def start():
                 #global_var.s_port+=1
             
         else:
-            time.sleep(7)
+            time.sleep(5)
             ms.connect()
             os.wait()
     except Exception as s:

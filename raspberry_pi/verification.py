@@ -49,7 +49,7 @@ def on_ir_receive(pinNo, bouncetime=150):
         elif 1000 < us < 2000:
             outbin += "1"
     try:
-        print("Bin:",outbin)
+        print("Received IR signal: ",outbin,outbin,outbin,outbin,sep='')
         return int(outbin, 2)
     except ValueError:
         # probably an empty code
@@ -67,7 +67,7 @@ def verify_tenant(client_sock):
     #     code+=(i-65)
     # print("\nverification code =",code)
 
-    print("\n\033[32mSenty:\033[m 123")
+    print("\n\033[32mSent:\033[m 123")
     client_sock.send(b"123")
 
     setup()
@@ -111,16 +111,16 @@ def verify(client_sock):
 
     pi_key = pi_key.publickey().export_key()
     pi_key = pi_key[27:-25]
-    first_pi = pi_key[:5]
+    first_pi = pi_key[:64]
     print(first_pi.decode())
     print("\n\033[32mSent Raspberry Pi Public Key:\033[m")
-    print(pi_key.decode(),"\nlen:",len(pi_key))
+    print(pi_key.decode(),"\n") #len:",len(pi_key))
     client_sock.send(pi_key)
 
     #Receive phone Key    
     phone_key = client_sock.recv(2048)
     phone_key = "-----BEGIN PUBLIC KEY-----\n"+phone_key.decode()+"\n-----END PUBLIC KEY-----"
-    print("Phone Public Key:\n",phone_key)
+    print("\033[32mReceived Phone Public Key:\033[m\n",phone_key)
     pre_key_RSA = RSA.import_key(phone_key)
 
 
@@ -132,12 +132,12 @@ def verify(client_sock):
 
     code = 0
     for i in first_pi:
-        code+=(i-65)
-    print("\nverification code =",code)
+        code+=(i*23456)
+    #print("\nverification code =",code)
 
     setup()
     try:
-        print("\nStarting IR Listener\n")
+        print("\n\033[33mStarting IR Listener\033[m\n")
         c = 0
         v = 0
         while (c!=10):
@@ -146,8 +146,8 @@ def verify(client_sock):
             GPIO.wait_for_edge(pin, GPIO.FALLING)
             ir = on_ir_receive(pin)
             if ir:
-                print("Hex:",str(hex(ir)))
-                print("Dec:",str(ir),"\n")
+                #print("Hex:",str(hex(ir)))
+                #print("Dec:",str(ir),"\n")
                 if ir == code:
                     client_sock.send(b"verification successful")
                     print("\033[33mVerification successful!\033[m")

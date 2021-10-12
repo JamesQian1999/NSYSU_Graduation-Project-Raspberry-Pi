@@ -3,9 +3,9 @@ import socket
 
 
 def connect():
-    print("My server")
-    HOST = '192.168.0.101'
-    PORT = 9999
+    print("\033[32mConnect to server...\033[m")
+    HOST = '192.168.0.102'
+    PORT = 9993
 
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.connect((HOST, PORT))
@@ -37,8 +37,15 @@ def connect():
     print("\n\033[32mSent:\033[m\t\tclose")
     server.send(b"close")
 
+    tmp = 1
     while True:
         print("\n\033[33mWaiting for command...\033[m")
+
+        # if tmp:
+        #     print("\033[32mReceived:\t\033[m", "get video", sep="")
+        #     print("\033[32mSent:\033[m\t\tACK")
+        #     tmp = 0
+
 
         data = server.recv(2048)
         print("\033[32mReceived:\t\033[m", data.decode(), sep="")
